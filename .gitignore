@@ -1,0 +1,21 @@
+# VScode相关内容
+.vscode
+
+# Django数据库相关内容
+migrations
+*.sqlite3
+
+# Python运行缓存
+__pycache__
+
+# MACOS
+.DS_Store
+
+# 上传的数据
+*.jpg
+*.png
+*.gif
+*.mp4
+*.txt
+*.zip
+

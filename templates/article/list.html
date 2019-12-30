@@ -1,0 +1,107 @@
+<!-- extends表明此页面继承自 base.html 文件 -->
+{% extends "base.html" %}
+{% load static %}
+
+<!-- 写入 base.html 中定义的 title -->
+{% block title %}
+    首页
+{% endblock title %}
+
+{% block css %}
+<style>
+    .disable-click {
+        color: gray;
+        pointer-events: none;
+    }
+</style>
+{% endblock css %}
+<!-- 写入 base.html 中定义的 content -->
+{% block content %}
+
+
+<!-- 定义放置文章标题的div容器 -->
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="#" id='newest' onclick='getNewest()' disabled="disabled" class="disable-click">
+                    最新
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="#" id='hotest' onclick="getHotest()">
+                    最热
+                </a>
+            </li>
+        </ol>
+    </nav>
+    <div class="row mt-2" id='article_list'>
+        {% for article in articles %}
+        <!-- 文章内容 -->
+        <div class="col-4 mb-4">
+        <!-- 卡片容器 -->
+            <div class="card h-100">
+                <!-- 标题 -->
+                <h4 class="card-header">{{ article.title }}</h4>
+                <!-- 摘要 -->
+                <div class="card-body">
+                    <iframe frameborder="0" srcdoc="{{ article.body }}"></iframe>
+                </div>
+                <!-- 注脚 -->
+                <div class="card-footer">
+                    <a href="{% url 'blog:article_detail' article.id %}" class="btn btn-primary">阅读本文</a>
+                    <span class="col align-self-end" style="color: gray">
+                        <small>浏览：{{ article.total_views }}</small>
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% include 'page.html' %}
+<script>
+    function changeList(articles) {
+        htmlString = "";
+        for (i in articles) {
+            htmlString += `
+                <div class="col-4 mb-4">
+                    <div class="card h-100">
+                        <h4 class="card-header">${articles[i].fields.title}</h4>
+                        <div class="card-body">
+                            <iframe frameborder="0" srcdoc="${articles[i].fields.body}"></iframe>
+                        </div>
+                        <div class="card-footer">
+                            <a href="/blog/article_detail/${articles[i].pk}/" class="btn btn-primary">阅读本文</a>
+                            <span class="col align-self-end" style="color: gray">
+                                <small>浏览：${articles[i].fields.total_views}</small>
+                            </span>
+                        </div>
+                    </div>
+                </div>`;
+        }
+        console.log(htmlString);
+        return htmlString;
+    }
+
+    function getHotest() {
+        $.get("{% url 'blog:article_list' %}?order=total_views", (res) => {
+            $('#hotest').addClass('disable-click');
+            $('#newest').removeClass('disable-click');
+            $('#article_list').html(changeList(res.articles));
+            $('#hotest').attr("disabled", true);
+            $('#newest').attr("disabled", false);
+        });
+    }
+
+    function getNewest() {
+        $.get("{% url 'blog:article_list' %}", (res) => {
+            $("#newest").addClass('disable-click');
+            $('#hotest').removeClass('disable-click');
+            $('#article_list').html(changeList(res.articles));
+            $('#hotest').attr("disabled", false);
+            $('#newest').attr("disabled", true);
+        });
+    }
+</script>
+{% endblock content %}

@@ -1,0 +1,67 @@
+<!-- extends表明此页面继承自 base.html 文件 -->
+{% extends "base.html" %}
+{% load static %}
+
+<!-- 写入 base.html 中定义的 title -->
+{% block title %}
+    {{ article.title }}
+{% endblock title %}
+
+<!-- 写入 base.html 中定义的 content -->
+{% block content %}
+
+<!-- 文章详情 -->
+<div class="container">
+    <div class="row">
+        <!-- 标题及作者 -->
+        <h1 class="col-12 mt-4 mb-4">{{ article.title }}</h1>
+        <div class="col-12 alert alert-success">作者：
+            {% if user.is_authenticated %}
+                <a href="{% url 'userprofile:edit' article.author.id %}">{{ article.author }}</a>
+            {% else %}
+                <a href="{% url 'userprofile:view' article.author.id %}">{{ article.author }}</a>
+            {% endif %} 
+            {% if user.is_authenticated %}
+                <a href="#" onclick='confirm_safe_delete()' style="right: 0;">删除文章</a>
+                <a href="{% url 'blog:article_update' article.id %}">编辑文章</a>
+                <!-- 新增一个隐藏的表单 -->
+                <form 
+                    style="display:none;" 
+                    id="safe_delete"
+                    action="{% url 'blog:article_delete' article.id %}" 
+                    method="POST"
+                    >
+                    {% csrf_token %}
+                    <button type="submit">发送</button>
+                </form>
+            {% endif %}
+            <div>
+                浏览：{{ article.total_views }}
+            </div>
+        </div>
+        <!-- 文章正文 -->
+        <div class="col-12 code-body">
+            <!-- safe 过滤器，告诉 Django 此段 html 文本不需要转义 -->
+            <p>{{ article.body | safe }}</p>
+        </div>
+    </div>
+</div>
+<script>
+    // 提示文章删除
+    function confirm_safe_delete() {
+        // 调用 layer 弹窗组件
+        layer.open({
+            title: "确认删除",
+            content: "确认删除这篇文章吗？",
+            yes: (index, layero) => {
+                // 前往指定的 url
+                $('form#safe_delete button').click();
+                layer.close(index);
+            },
+        });
+    }
+</script>
+<link rel="stylesheet" href="{% static 'md_css/vs.css' %}">
+<link rel="stylesheet" href="{% static 'md_css/github.css' %}">
+
+{% endblock content %}

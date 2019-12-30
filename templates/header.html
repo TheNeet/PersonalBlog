@@ -1,0 +1,67 @@
+{% load static %}
+<!-- 定义导航栏 -->
+<nav class="navbar navbar-expand-lg nav-dark bg-dark">
+    <div class="container">
+
+        <!-- 导航栏商标 -->
+        <a href="#" class="navbar-brand">我的博客</a>
+        <!-- 导航入口 -->
+        <div>
+            <ul class="navbar-nav">
+                <!-- 条目 -->
+                <li class="nav-item">
+                    <a href="{% url 'blog:article_list' %}" class="nav-link">文章</a>
+                </li>
+                <!-- Django的 if 模板语句 -->
+                {% if user.is_authenticated %}
+                    <!-- 如果用户已经登录，则显示用户名下拉框 -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ user.username }}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a href="{% url 'blog:article_write' %}" class="dropdown-item">写文章</a>
+                            <a class="dropdown-item" href='{% url "userprofile:edit" user.id %}'>个人信息</a>
+                            <form action="{% url 'userprofile:delete' user.id %}" method="POST" style="display: none;" id="user_delete" >
+                                {% csrf_token %}
+                                <button type="submit">发送</button>
+                            </form>
+                            <a class="dropdown-item" onclick="confirm_logout()" style="cursor: pointer;">退出登录</a>
+                            <a class="dropdown-item" onclick="confirm_user_delete()" style="cursor: pointer;">删除用户</a>
+                        </div>
+                    </li>
+                <!-- 如果用户未登录，则显示 “登录” -->
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'userprofile:login' %}">登录</a>
+                    </li>                    
+                <!-- if 语句在这里结束 -->
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+<script>
+    // 确认退出
+    function confirm_logout() {
+        layer.open({
+            title: "确认退出",
+            content: "请确认是否退出。",
+            yes: () => {
+                location.href = "{% url 'userprofile:logout' %}";
+            },
+        });
+    }
+
+    // 确认删除
+    function confirm_user_delete() {
+        layer.open({
+            title: '确认删除',
+            content: '请确认是否删除当前用户。',
+            yes: (index, layero) => {
+                $('form#user_delete button').click();
+                layer.close(layero);
+            },
+        });
+    }
+</script>
