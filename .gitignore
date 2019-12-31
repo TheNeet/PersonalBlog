@@ -2,7 +2,7 @@
 .vscode
 
 # Django数据库相关内容
-*_articlepost_*.py
+*articlepost*.py
 *auto*.py
 *_initial.py
 *.sqlite3
