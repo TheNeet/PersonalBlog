@@ -13,4 +13,5 @@ urlpatterns = [
     path('article-update/<int:id>/', blog.views_article.article_update, name='article_update'),
     path('article-write/', blog.views_article.article_write, name='article_write'),
     path('happy-new-year', blog.views_other.happy_new_year, name='happy_new_year'),
+    path('happy-new-yearLH', blog.views_other.happy_new_yearLH, name='happy_new_yearLH'),
 ]
