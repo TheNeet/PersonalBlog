@@ -2,12 +2,13 @@
 .vscode
 
 # Django数据库相关内容
-migrations
+*auto*.py
+*_initial.py
 *.sqlite3
 
 # Python运行缓存
 __pycache__
-settings.py
+*settings.py
 
 # MACOS
 .DS_Store
